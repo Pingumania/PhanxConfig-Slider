@@ -1,14 +1,15 @@
 --[[--------------------------------------------------------------------
 	PhanxConfig-Slider
-	Simple color picker widget generator. Requires LibStub.
-	Based on tekKonfig-Slider by Tekkub and Ace3.
+	Simple slider widget generator.
+	Based on tekKonfig-Slider and AceGUI-3.0-Slider.
+	Requires LibStub.
 ----------------------------------------------------------------------]]
 
-local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", 1)
+local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", 2)
 if not lib then return end
 
 local function OnEnter(self)
-	if self.hint then
+	if self.desc then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 		GameTooltip:SetText(self.hint, nil, nil, nil, nil, true)
 	end
@@ -26,6 +27,21 @@ local function OnMouseWheel(self, delta)
 		self:SetValue(min(self:GetValue() + step, maxValue))
 	else
 		self:SetValue(max(self:GetValue() + step, minValue))
+	end
+end
+
+local function OnValueChanged(self)
+	local value
+	if self.func then
+		value = self.func(self, self:GetValue())
+	end
+	if not value then
+		value = self:GetValue()
+	end
+	if self.isPercent then
+		self.value:SetFormattedText(self.valueFormat or "%d%%", value * 100)
+	else
+		self.value:SetFormattedText(self.valueFormat or "%d", value)
 	end
 end
 
@@ -80,19 +96,22 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent)
 	value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
 	value:SetTextColor(1, 0.8, 0)
 
+	slider:EnableMouseWheel(true)
 	slider:SetMinMaxValues(lowvalue, highvalue)
 	slider:SetValueStep(valuestep or 1)
 
-	slider:EnableMouseWheel(true)
-	slider:SetScript("OnMouseWheel", OnMouseWheel)
 	slider:SetScript("OnEnter", OnEnter)
 	slider:SetScript("OnLeave", OnLeave)
+	slider:SetScript("OnMouseWheel", OnMouseWheel)
+	slider:SetScript("OnValueChanged", OnValueChanged)
+
+	slider.isPercent = percent
 
 	slider.container = frame
 	slider.label = label
-	slider.low = low
-	slider.high = high
-	slider.value = value
+	slider.lowText = low
+	slider.highText = high
+	slider.valueText = value
 
 	return slider
 end
