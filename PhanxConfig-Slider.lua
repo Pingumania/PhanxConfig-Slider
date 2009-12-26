@@ -5,13 +5,13 @@
 	Requires LibStub.
 ----------------------------------------------------------------------]]
 
-local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", 2)
+local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", 3)
 if not lib then return end
 
 local function OnEnter(self)
 	if self.desc then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(self.hint, nil, nil, nil, nil, true)
+		GameTooltip:SetText(self.desc, nil, nil, nil, nil, true)
 	end
 end
 
@@ -31,17 +31,14 @@ local function OnMouseWheel(self, delta)
 end
 
 local function OnValueChanged(self)
-	local value
-	if self.func then
-		value = self.func(self, self:GetValue())
-	end
+	local value = self.OnValueChanged and self:OnValueChanged(self:GetValue())
 	if not value then
 		value = self:GetValue()
 	end
 	if self.isPercent then
-		self.value:SetFormattedText(self.valueFormat or "%d%%", value * 100)
+		self.valueText:SetFormattedText(self.valueFormat or "%d%%", value * 100)
 	else
-		self.value:SetFormattedText(self.valueFormat or "%d", value)
+		self.valueText:SetFormattedText(self.valueFormat or "%d", value)
 	end
 end
 
