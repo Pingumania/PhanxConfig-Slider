@@ -9,13 +9,14 @@
 	its internals may change at any time without notice.
 ----------------------------------------------------------------------]]
 
-local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", 3)
+local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", 4)
 if not lib then return end
 
 local function OnEnter(self)
-	if self.desc then
+	local text = self:GetParent().desc
+	if text then
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-		GameTooltip:SetText(self.desc, nil, nil, nil, nil, true)
+		GameTooltip:SetText(text, nil, nil, nil, nil, true)
 	end
 end
 
@@ -26,7 +27,6 @@ end
 local function OnMouseWheel(self, delta)
 	local step = self:GetValueStep() * delta
 	local minValue, maxValue = self:GetMinMaxValues()
-
 	if step > 0 then
 		self:SetValue(min(self:GetValue() + step, maxValue))
 	else
@@ -35,15 +35,30 @@ local function OnMouseWheel(self, delta)
 end
 
 local function OnValueChanged(self)
-	local value = self.OnValueChanged and self:OnValueChanged(self:GetValue())
+	local parent = self:GetParent()
+	local value = parent.OnValueChanged and parent:OnValueChanged(self:GetValue())
 	if not value then
 		value = self:GetValue()
 	end
+	if parent.isPercent then
+		parent.valueText:SetFormattedText(self.valueFormat or "%d%%", value * 100)
+	else
+		parent.valueText:SetFormattedText(self.valueFormat or "%d", value)
+	end
+end
+
+local function SetText(self, text)
+	return self.valueText:SetText(text)
+end
+
+local function SetValue(self, value)
 	if self.isPercent then
 		self.valueText:SetFormattedText(self.valueFormat or "%d%%", value * 100)
 	else
 		self.valueText:SetFormattedText(self.valueFormat or "%d", value)
 	end
+
+	return self.slider:SetValue(value)
 end
 
 local sliderBG = {
@@ -106,13 +121,16 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent)
 	slider:SetScript("OnMouseWheel", OnMouseWheel)
 	slider:SetScript("OnValueChanged", OnValueChanged)
 
-	slider.isPercent = percent
+	frame.slider = slider
+	frame.labelText = label
+	frame.lowText = low
+	frame.highText = high
+	frame.valueText = value
 
-	slider.container = frame
-	slider.label = label
-	slider.lowText = low
-	slider.highText = high
-	slider.valueText = value
+	frame.isPercent = percent
 
-	return slider
+	frame.SetText = SetText
+	frame.SetValue = SetValue
+
+	return frame
 end
