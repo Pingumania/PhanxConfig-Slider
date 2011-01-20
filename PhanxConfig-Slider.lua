@@ -70,14 +70,17 @@ local sliderBG = {
 	insets = { left = 3, right = 3, top = 6, bottom = 6 }
 }
 
-function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent)
+function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent, desc)
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetWidth(144)
 	frame:SetHeight(42)
 
+	frame.desc = desc
+
 --	local bg = frame:CreateTexture(nil, "BACKGROUND")
 --	bg:SetAllPoints(frame)
---	bg:SetTexture(0, 0, 0)
+--	bg:SetTexture(0, 0, 0, 0.5)
+--	frame.bg = bg
 
 	local slider = CreateFrame("Slider", nil, frame)
 	slider:SetPoint("LEFT", 5, 0)
