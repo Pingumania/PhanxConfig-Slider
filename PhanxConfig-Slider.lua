@@ -78,19 +78,18 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	if type(highvalue) ~= "number" then highvalue = 100 end
 
 	local frame = CreateFrame("Frame", nil, parent)
-	frame:SetWidth(144)
+	frame:SetWidth(186)
 	frame:SetHeight(42)
 
 	frame.desc = desc
 
---	local bg = frame:CreateTexture(nil, "BACKGROUND")
---	bg:SetAllPoints(frame)
---	bg:SetTexture(0, 0, 0, 0.5)
---	frame.bg = bg
+	frame.bg = frame:CreateTexture(nil, "BACKGROUND")
+	frame.bg:SetAllPoints(true)
+	frame.bg:SetTexture(0, 0, 0, 0)
 
 	local slider = CreateFrame("Slider", nil, frame)
-	slider:SetPoint("LEFT", 5, 0)
-	slider:SetPoint("RIGHT", -5, 0)
+	slider:SetPoint("BOTTOMLEFT", 3, 10)
+	slider:SetPoint("BOTTOMRIGHT", -3, 10)
 	slider:SetHeight(17)
 	slider:SetHitRectInsets(0, 0, -10, -10)
 	slider:SetOrientation("HORIZONTAL")
@@ -98,8 +97,8 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	slider:SetBackdrop(sliderBG)
 
 	local label = slider:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-	label:SetPoint("BOTTOMLEFT", slider, "TOPLEFT")
-	label:SetPoint("BOTTOMRIGHT", slider, "TOPRIGHT")
+	label:SetPoint("TOPLEFT", frame, 5, 0)
+	label:SetPoint("TOPRIGHT", frame, -5, 0)
 	label:SetJustifyH("LEFT")
 	label:SetText(name)
 
