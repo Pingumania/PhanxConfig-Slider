@@ -71,7 +71,7 @@ local sliderBG = {
 }
 
 function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent, desc)
-	assert( type(parent) == "table" and parent.GetFrameType, "PhanxConfig-Slider: Parent is not a valid frame!" )
+	assert( type(parent) == "table" and parent.CreateFontString, "PhanxConfig-Slider: Parent is not a valid frame!" )
 	if type(name) ~= "string" then name = nil end
 	if type(desc) ~= "string" then desc = nil end
 	if type(lowvalue) ~= "number" then lowvalue = 0 end
