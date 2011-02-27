@@ -43,9 +43,9 @@ local function OnValueChanged(self)
 		value = self:GetValue()
 	end
 	if parent.isPercent then
-		parent.valueText:SetFormattedText(self.valueFormat or "%d%%", value * 100)
+		parent.valueText:SetFormattedText(self.valueFormat or "%.0f%%", value * 100)
 	else
-		parent.valueText:SetFormattedText(self.valueFormat or "%d", value)
+		parent.valueText:SetFormattedText(self.valueFormat or "%.0f", value)
 	end
 end
 
@@ -55,9 +55,9 @@ end
 
 local function SetValue(self, value)
 	if self.isPercent then
-		self.valueText:SetFormattedText(self.valueFormat or "%d%%", value * 100)
+		self.valueText:SetFormattedText(self.valueFormat or "%.0f%%", value * 100)
 	else
-		self.valueText:SetFormattedText(self.valueFormat or "%d", value)
+		self.valueText:SetFormattedText(self.valueFormat or "%.0f", value)
 	end
 
 	return self.slider:SetValue(value)
