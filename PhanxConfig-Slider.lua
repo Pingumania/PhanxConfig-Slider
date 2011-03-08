@@ -38,14 +38,20 @@ end
 
 local function OnValueChanged(self)
 	local parent = self:GetParent()
-	local value = parent.OnValueChanged and parent:OnValueChanged(self:GetValue())
-	if not value then
-		value = self:GetValue()
+	local value = self:GetValue()
+
+	if self.valueFactor then
+		value = value / self.valueFactor
 	end
+
+	if parent.OnValueChanged then
+		value = parent:OnValueChanged(value) or value
+	end
+
 	if parent.isPercent then
-		parent.valueText:SetFormattedText(self.valueFormat or "%.0f%%", value * 100)
+		parent.valueText:SetFormattedText("%.0f%%", value * 100)
 	else
-		parent.valueText:SetFormattedText(self.valueFormat or "%.0f", value)
+		parent.valueText:SetText(value)
 	end
 end
 
@@ -55,9 +61,13 @@ end
 
 local function SetValue(self, value)
 	if self.isPercent then
-		self.valueText:SetFormattedText(self.valueFormat or "%.0f%%", value * 100)
+		self.valueText:SetFormattedText("%.0f%%", value * 100)
 	else
-		self.valueText:SetFormattedText(self.valueFormat or "%.0f", value)
+		self.valueText:SetText(value)
+	end
+
+	if self.slider.valueFactor then
+		value = value * self.slider.valueFactor
 	end
 
 	return self.slider:SetValue(value)
@@ -76,6 +86,7 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	if type(desc) ~= "string" then desc = nil end
 	if type(lowvalue) ~= "number" then lowvalue = 0 end
 	if type(highvalue) ~= "number" then highvalue = 100 end
+	if type(valuestep) ~= "number" then valuestep = 1 end
 
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetWidth(186)
@@ -105,7 +116,7 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	local low = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	low:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, 3)
 	if percent then
-		low:SetFormattedText("%d%%", lowvalue * 100)
+		low:SetFormattedText("%.0f%%", lowvalue * 100)
 	else
 		low:SetText(lowvalue)
 	end
@@ -113,7 +124,7 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	local high = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 	high:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, 3)
 	if percent then
-		high:SetFormattedText("%d%%", highvalue * 100)
+		high:SetFormattedText("%.0f%%", highvalue * 100)
 	else
 		high:SetText(highvalue)
 	end
@@ -122,10 +133,19 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
 	value:SetTextColor(1, 0.8, 0)
 
-	slider:EnableMouseWheel(true)
-	slider:SetMinMaxValues(lowvalue, highvalue)
-	slider:SetValueStep(valuestep or 1)
+	local factor = 10 ^ math.max(string.len(tostring(valuestep):match("%.(%d+)") or ""),
+		string.len(tostring(minvalue):match("%.(%d+)") or ""),
+		string.len(tostring(maxvalue):match("%.(%d+)") or ""))
+	if factor > 1 then
+		slider.valueFactor = factor
+		slider:SetMinMaxValues(lowvalue * factor, highvalue * factor)
+		slider:SetValueStep(valuestep * factor)
+	else
+		slider:SetMinMaxValues(lowvalue, highvalue)
+		slider:SetValueStep(valuestep)
+	end
 
+	slider:EnableMouseWheel(true)
 	slider:SetScript("OnEnter", OnEnter)
 	slider:SetScript("OnLeave", OnLeave)
 	slider:SetScript("OnMouseWheel", OnMouseWheel)
