@@ -73,6 +73,22 @@ local function SetValue(self, value)
 	return self.slider:SetValue(value)
 end
 
+local function EditBox_OnEnterPressed(self) -- print("OnEnterPressed SLIDER")
+	local parent = self:GetParent():GetParent()
+	local text = self:GetText()
+	self:ClearFocus()
+
+	local value
+	if parent.isPercent then
+		value = tonumber(text:match("%d+")) / 100
+	else
+		value = tonumber(text)
+	end
+	if value then
+		SetValue(parent, value)
+	end
+end
+
 local sliderBG = {
 	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -129,9 +145,22 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 		high:SetText(highvalue)
 	end
 
-	local value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-	value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
-	value:SetTextColor(1, 0.8, 0)
+	local value
+	if LibStub("PhanxConfig-EditBox") then
+		value = LibStub("PhanxConfig-EditBox").CreateEditBox(frame, nil, desc, 5)
+		value:SetPoint("TOP", slider, "BOTTOM", 0, 13)
+		value:SetWidth(100)
+		value.editbox:SetScript("OnEnter", OnEnter)
+		value.editbox:SetScript("OnLeave", OnLeave)
+		value.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
+		value.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
+		value.editbox:SetFontObject(GameFontHighlightSmall)
+		value.editbox:SetJustifyH("CENTER")
+	else
+		value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+		value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
+		value:SetTextColor(1, 0.8, 0)
+	end
 
 	local factor = 10 ^ math.max(string.len(tostring(valuestep):match("%.(%d+)") or ""),
 		string.len(tostring(minvalue):match("%.(%d+)") or ""),
