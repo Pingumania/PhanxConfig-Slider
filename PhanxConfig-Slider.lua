@@ -89,6 +89,10 @@ local function EditBox_OnEnterPressed(self) -- print("OnEnterPressed SLIDER")
 	end
 end
 
+local function EditBoxContainer_SetFormattedText(self, text, ...)
+	return self.editbox:SetText(text:format(...))
+end
+
 local sliderBG = {
 	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -156,6 +160,7 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 		value.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
 		value.editbox:SetFontObject(GameFontHighlightSmall)
 		value.editbox:SetJustifyH("CENTER")
+		value.SetFormattedText = EditBoxContainer_SetFormattedText
 	else
 		value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
