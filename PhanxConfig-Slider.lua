@@ -150,7 +150,7 @@ function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent,
 	end
 
 	local value
-	if LibStub("PhanxConfig-EditBox") then
+	if LibStub("PhanxConfig-EditBox", true) then
 		value = LibStub("PhanxConfig-EditBox").CreateEditBox(frame, nil, desc, 5)
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 13)
 		value:SetWidth(100)
