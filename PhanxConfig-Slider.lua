@@ -167,9 +167,9 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 		value:SetTextColor(1, 0.8, 0)
 	end
 
-	local factor = 10 ^ math.max(string.len(tostring(valuestep):match("%.(%d+)") or ""),
-		string.len(tostring(minvalue):match("%.(%d+)") or ""),
-		string.len(tostring(maxvalue):match("%.(%d+)") or ""))
+	local factor = 10 ^ max(strlen(tostring(valuestep):match("%.(%d+)") or ""),
+		strlen(tostring(minvalue):match("%.(%d+)") or ""),
+		strlen(tostring(maxvalue):match("%.(%d+)") or ""))
 	if factor > 1 then
 		slider.valueFactor = factor
 		slider:SetMinMaxValues(lowvalue * factor, highvalue * factor)
