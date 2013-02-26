@@ -9,7 +9,7 @@
 	its internals may change at any time without notice.
 ----------------------------------------------------------------------]]
 
-local MINOR_VERSION = tonumber(("$Revision$"):match("%d+"))
+local MINOR_VERSION = tonumber(strmatch("$Revision$", "%d+"))
 
 local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", MINOR_VERSION)
 if not lib then return end
@@ -100,7 +100,7 @@ local sliderBG = {
 	insets = { left = 3, right = 3, top = 6, bottom = 6 }
 }
 
-function lib.CreateSlider(parent, name, lowvalue, highvalue, valuestep, percent, desc)
+function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, percent)
 	assert( type(parent) == "table" and parent.CreateFontString, "PhanxConfig-Slider: Parent is not a valid frame!" )
 	if type(name) ~= "string" then name = nil end
 	if type(desc) ~= "string" then desc = nil end
