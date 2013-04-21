@@ -51,7 +51,7 @@ local function OnValueChanged(self)
 	if parent.isPercent then
 		parent.valueText:SetFormattedText("%.0f%%", value * 100)
 	else
-		parent.valueText:SetText(value)
+		parent:SetText(value)
 	end
 end
 
