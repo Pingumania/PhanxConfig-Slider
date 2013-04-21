@@ -63,7 +63,7 @@ local function SetValue(self, value)
 	if self.isPercent then
 		self.valueText:SetFormattedText("%.0f%%", value * 100)
 	else
-		self.valueText:SetText(value)
+		self:SetText(value)
 	end
 
 	if self.slider.valueFactor then
