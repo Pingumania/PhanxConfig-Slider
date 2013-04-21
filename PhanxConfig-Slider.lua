@@ -100,7 +100,7 @@ local sliderBG = {
 	insets = { left = 3, right = 3, top = 6, bottom = 6 }
 }
 
-function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, percent)
+function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, percent, noEditBox)
 	assert( type(parent) == "table" and parent.CreateFontString, "PhanxConfig-Slider: Parent is not a valid frame!" )
 	if type(name) ~= "string" then name = nil end
 	if type(desc) ~= "string" then desc = nil end
@@ -133,7 +133,7 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 	label:SetJustifyH("LEFT")
 	label:SetText(name)
 
-	local low = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local low = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 	low:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, 3)
 	if percent then
 		low:SetFormattedText("%.0f%%", lowvalue * 100)
@@ -141,7 +141,7 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 		low:SetText(lowvalue)
 	end
 
-	local high = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local high = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 	high:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, 3)
 	if percent then
 		high:SetFormattedText("%.0f%%", highvalue * 100)
@@ -150,7 +150,7 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 	end
 
 	local value
-	if LibStub("PhanxConfig-EditBox", true) then
+	if not noEditBox and LibStub("PhanxConfig-EditBox", true) then
 		value = LibStub("PhanxConfig-EditBox").CreateEditBox(frame, nil, desc, 5)
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 13)
 		value:SetWidth(100)
@@ -164,7 +164,6 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 	else
 		value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
-		value:SetTextColor(1, 0.8, 0)
 	end
 
 	local factor = 10 ^ max(strlen(tostring(valuestep):match("%.(%d+)") or ""),
