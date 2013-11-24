@@ -50,8 +50,9 @@ local function OnValueChanged(self)
 		value = value / self.valueFactor
 	end
 
-	if parent.OnValueChanged then
-		value = parent:OnValueChanged(value) or value
+	local handler = parent.ApplyValue or parent.OnValueChanged
+	if handler then
+		value = handler(parent, value) or value
 	end
 
 	if parent.isPercent then
