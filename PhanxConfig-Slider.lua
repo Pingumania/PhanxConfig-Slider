@@ -40,6 +40,12 @@ local function OnValueChanged(self)
 	local parent = self:GetParent()
 	local value = self:GetValue()
 
+	local valueStep = self.valueStep
+	if valueStep and valueStep > 0 then
+		local minValue = self.minValue or 0
+		value = floor((value - minValue) / valueStep + 0.5) * valueStep + minValue
+	end
+
 	if self.valueFactor then
 		value = value / self.valueFactor
 	end
@@ -183,6 +189,9 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 	slider:SetScript("OnLeave", OnLeave)
 	slider:SetScript("OnMouseWheel", OnMouseWheel)
 	slider:SetScript("OnValueChanged", OnValueChanged)
+
+	slider.valueStep = slider:GetValueStep()
+	slider.minValue, slider.maxValue = slider:GetMinMaxValues()
 
 	frame.slider = slider
 	frame.labelText = label
