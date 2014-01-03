@@ -208,4 +208,4 @@ function lib:New( parent, name, desc, lowvalue, highvalue, valuestep, percent, n
 	return frame
 end
 
-lib.CreateSlider = function( ... ) return lib:New( ... ) end
+function lib.CreateSlider( ... ) return lib:New( ... ) end
