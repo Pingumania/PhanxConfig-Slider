@@ -107,7 +107,7 @@ local sliderBG = {
 	insets = { left = 3, right = 3, top = 6, bottom = 6 }
 }
 
-function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, percent, noEditBox)
+function lib.New(parent, name, desc, lowvalue, highvalue, valuestep, percent, noEditBox)
 	assert( type(parent) == "table" and parent.CreateFontString, "PhanxConfig-Slider: Parent is not a valid frame!" )
 	if type(name) ~= "string" then name = nil end
 	if type(desc) ~= "string" then desc = nil end
@@ -207,3 +207,5 @@ function lib.CreateSlider(parent, name, desc, lowvalue, highvalue, valuestep, pe
 
 	return frame
 end
+
+lib.CreateSlider = lib.New
