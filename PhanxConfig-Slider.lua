@@ -61,7 +61,7 @@ function scripts:OnValueChanged()
 	if parent.isPercent then
 		parent.valueText:SetFormattedText("%.0f%%", value * 100)
 	else
-		parent:SetText(value)
+		parent.valueText:SetText(value)
 	end
 end
 
@@ -71,12 +71,12 @@ local methods = {}
 
 function methods:GetValue()
 	return self.slider:GetValue()
-end,
+end
 function methods:SetValue(value)
 	if self.isPercent then
 		self.valueText:SetFormattedText("%.0f%%", value * 100)
 	else
-		self:SetText(value)
+		self.valueText:SetText(value)
 	end
 
 	if self.slider.valueFactor then
@@ -91,13 +91,6 @@ function methods:GetLabel()
 end
 function methods:SetLabel(text)
 	return self.labelText:SetText(text)
-end
-
-function methods:GetText()
-	return self.valueText:GetText()
-end
-function methods:SetText(text)
-	return self.valueText:SetText(text)
 end
 
 function methods:GetTooltipText()
