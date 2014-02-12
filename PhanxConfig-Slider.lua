@@ -122,10 +122,6 @@ local function EditBox_OnEnterPressed(self) -- print("OnEnterPressed SLIDER")
 	end
 end
 
-local function EditBoxContainer_SetFormattedText(self, text, ...)
-	return self.editbox:SetFormattedText(text, ...)
-end
-
 local sliderBG = {
 	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
 	edgeFile = "Interface\\Buttons\\UI-SliderBar-Border",
@@ -133,13 +129,13 @@ local sliderBG = {
 	insets = { left = 3, right = 3, top = 6, bottom = 6 }
 }
 
-function lib:New(parent, name, tooltipText, lowvalue, highvalue, valuestep, percent, noEditBox)
+function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, percent, noEditBox)
 	assert(type(parent) == "table" and parent.CreateFontString, "PhanxConfig-Slider: Parent is not a valid frame!")
 	if type(name) ~= "string" then name = nil end
 	if type(tooltipText) ~= "string" then tooltipText = nil end
-	if type(lowvalue) ~= "number" then lowvalue = 0 end
-	if type(highvalue) ~= "number" then highvalue = 100 end
-	if type(valuestep) ~= "number" then valuestep = 1 end
+	if type(minValue) ~= "number" then minValue = 0 end
+	if type(maxValue) ~= "number" then maxValue = 100 end
+	if type(valueStep) ~= "number" then valueStep = 1 end
 
 	local frame = CreateFrame("Frame", nil, parent)
 	frame:SetWidth(186)
@@ -163,20 +159,20 @@ function lib:New(parent, name, tooltipText, lowvalue, highvalue, valuestep, perc
 	label:SetPoint("TOPRIGHT", frame, -5, 0)
 	label:SetJustifyH("LEFT")
 
-	local low = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-	low:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, 3)
+	local minText = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	minText:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, 3)
 	if percent then
-		low:SetFormattedText("%.0f%%", lowvalue * 100)
+		minText:SetFormattedText("%.0f%%", minValue * 100)
 	else
-		low:SetText(lowvalue)
+		minText:SetText(minValue)
 	end
 
-	local high = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
-	high:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, 3)
+	local maxText = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+	maxText:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, 3)
 	if percent then
-		high:SetFormattedText("%.0f%%", highvalue * 100)
+		maxText:SetFormattedText("%.0f%%", maxValue * 100)
 	else
-		high:SetText(highvalue)
+		maxText:SetText(maxValue)
 	end
 
 	local value
@@ -190,26 +186,25 @@ function lib:New(parent, name, tooltipText, lowvalue, highvalue, valuestep, perc
 		value.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
 		value.editbox:SetFontObject(GameFontHighlightSmall)
 		value.editbox:SetJustifyH("CENTER")
-		value.SetFormattedText = EditBoxContainer_SetFormattedText
 	else
 		value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
 	end
 
-	local factor = 10 ^ max(strlen(tostring(valuestep):match("%.(%d+)") or ""),
+	local factor = 10 ^ max(strlen(tostring(valueStep):match("%.(%d+)") or ""),
 		strlen(tostring(minvalue):match("%.(%d+)") or ""),
 		strlen(tostring(maxvalue):match("%.(%d+)") or ""))
 	if factor > 1 then
 		slider.valueFactor = factor
-		slider:SetMinMaxValues(lowvalue * factor, highvalue * factor)
-		slider.minValue, slider.maxValue = lowvalue * factor, highvalue * factor
-		slider:SetValueStep(valuestep * factor)
-		slider.valueStep = valuestep * factor
+		slider:SetMinMaxValues(minValue * factor, maxValue * factor)
+		slider.minValue, slider.maxValue = minValue * factor, maxValue * factor
+		slider:SetValueStep(valueStep * factor)
+		slider.valueStep = valueStep * factor
 	else
-		slider:SetMinMaxValues(lowvalue, highvalue)
-		slider.minValue, slider.maxValue = lowvalue, highvalue
-		slider:SetValueStep(valuestep)
-		slider.valueStep = valuestep
+		slider:SetMinMaxValues(minValue, maxValue)
+		slider.minValue, slider.maxValue = minValue, maxValue
+		slider:SetValueStep(valueStep)
+		slider.valueStep = valueStep
 	end
 
 	slider:EnableMouseWheel(true)
@@ -220,8 +215,8 @@ function lib:New(parent, name, tooltipText, lowvalue, highvalue, valuestep, perc
 
 	frame.slider = slider
 	frame.labelText = label
-	frame.lowText = low
-	frame.highText = high
+	frame.minText = minText
+	frame.maxText = high
 	frame.valueText = value
 
 	frame.isPercent = percent
