@@ -89,7 +89,7 @@ function methods:GetLabel()
 	return self.labelText:GetText()
 end
 function methods:SetLabel(text)
-	return self.labelText:SetText(text)
+	self.labelText:SetText(text)
 end
 
 function methods:GetTooltipText()
@@ -97,10 +97,6 @@ function methods:GetTooltipText()
 end
 function methods:SetTooltipText(text)
 	self.tooltipText = text
-end
-
-function methods:SetFunction(func)
-	self.func = func
 end
 
 ------------------------------------------------------------------------
