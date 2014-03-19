@@ -53,9 +53,8 @@ function scripts:OnValueChanged()
 		value = value / self.valueFactor
 	end
 
-	local func = parent.func or parent.ApplyValue or parent.OnValueChanged
-	if func then
-		value = func(parent, value) or value
+	if parent.Cabllack then
+		value = parent:Callback(value) or value
 	end
 
 	if parent.isPercent then
