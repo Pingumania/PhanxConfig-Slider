@@ -16,9 +16,45 @@ if not lib then return end
 
 ------------------------------------------------------------------------
 
-local scripts = {}
+local methods = {}
 
-function scripts:OnEnter()
+function methods:GetValue()
+	return self.slider:GetValue()
+end
+
+function methods:SetValue(value)
+	if self.isPercent then
+		self.valueText:SetFormattedText("%.0f%%", value * 100)
+	else
+		self.valueText:SetText(value)
+	end
+
+	if self.slider.valueFactor then
+		value = value * self.slider.valueFactor
+	end
+
+	return self.slider:SetValue(value)
+end
+
+function methods:GetLabel()
+	return self.labelText:GetText()
+end
+
+function methods:SetLabel(text)
+	self.labelText:SetText(text)
+end
+
+function methods:GetTooltip()
+	return self.tooltipText
+end
+
+function methods:SetTooltip(text)
+	self.tooltipText = text
+end
+
+------------------------------------------------------------------------
+
+local function Slider_OnEnter(self)
 	local container = self:GetParent()
 	local text = container.tooltipText
 	if text then
@@ -29,11 +65,12 @@ function scripts:OnEnter()
 		GameTooltip:Show()
 	end
 end
-function scripts:OnLeave()
+
+local function Slider_OnLeave(self)
 	GameTooltip:Hide()
 end
 
-function scripts:OnMouseWheel(delta)
+local function Slider_OnMouseWheel(self, delta)
 	local step = self:GetValueStep() * delta
 	local minValue, maxValue = self:GetMinMaxValues()
 	if step > 0 then
@@ -43,7 +80,7 @@ function scripts:OnMouseWheel(delta)
 	end
 end
 
-function scripts:OnValueChanged()
+local function Slider_OnValueChanged(self)
 	local parent = self:GetParent()
 	local value = self:GetValue()
 	local minValue, maxValue = self:GetMinMaxValues()
@@ -70,40 +107,15 @@ end
 
 ------------------------------------------------------------------------
 
-local methods = {}
-
-function methods:GetValue()
-	return self.slider:GetValue()
-end
-function methods:SetValue(value)
-	if self.isPercent then
-		self.valueText:SetFormattedText("%.0f%%", value * 100)
-	else
-		self.valueText:SetText(value)
-	end
-
-	if self.slider.valueFactor then
-		value = value * self.slider.valueFactor
-	end
-
-	return self.slider:SetValue(value)
+local function EditBox_OnEnter(self)
+	local parent = self:GetParent():GetParent()
+	return Slider_OnEnter(parent.slider)
 end
 
-function methods:GetLabel()
-	return self.labelText:GetText()
+local function EditBox_OnLeave(self)
+	local parent = self:GetParent():GetParent()
+	return Slider_OnLeave(parent.slider)
 end
-function methods:SetLabel(text)
-	self.labelText:SetText(text)
-end
-
-function methods:GetTooltipText()
-	return self.tooltipText
-end
-function methods:SetTooltipText(text)
-	self.tooltipText = text
-end
-
-------------------------------------------------------------------------
 
 local function EditBox_OnEnterPressed(self) -- print("OnEnterPressed SLIDER")
 	local parent = self:GetParent():GetParent()
@@ -120,6 +132,8 @@ local function EditBox_OnEnterPressed(self) -- print("OnEnterPressed SLIDER")
 		parent:SetValue(value)
 	end
 end
+
+------------------------------------------------------------------------
 
 local sliderBG = {
 	bgFile = "Interface\\Buttons\\UI-SliderBar-Background",
@@ -152,14 +166,18 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 	slider:SetOrientation("HORIZONTAL")
 	slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
 	slider:SetBackdrop(sliderBG)
+	frame.slider = slider
 
 	local label = slider:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 	label:SetPoint("TOPLEFT", frame, 5, 0)
 	label:SetPoint("TOPRIGHT", frame, -5, 0)
 	label:SetJustifyH("LEFT")
+	frame.labelText = label
 
 	local minText = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 	minText:SetPoint("TOPLEFT", slider, "BOTTOMLEFT", 0, 3)
+	frame.minText = minText
+
 	if percent then
 		minText:SetFormattedText("%.0f%%", minValue * 100)
 	else
@@ -168,6 +186,8 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 
 	local maxText = slider:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
 	maxText:SetPoint("TOPRIGHT", slider, "BOTTOMRIGHT", 0, 3)
+	frame.maxText = high
+
 	if percent then
 		maxText:SetFormattedText("%.0f%%", maxValue * 100)
 	else
@@ -179,16 +199,17 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 		value = LibStub("PhanxConfig-EditBox"):New(frame, nil, tooltipText, 5)
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 13)
 		value:SetWidth(100)
-		value.editbox:SetScript("OnEnter", scripts.OnEnter)
-		value.editbox:SetScript("OnLeave", scripts.OnLeave)
-		value.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
-		value.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
 		value.editbox:SetFontObject(GameFontHighlightSmall)
 		value.editbox:SetJustifyH("CENTER")
+		value.editbox:SetScript("OnEnter", EditBox_OnEnter)
+		value.editbox:SetScript("OnLeave", EditBox_OnLeave)
+		value.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
+		value.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
 	else
 		value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 		value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
 	end
+	frame.valueText = value
 
 	local factor = 10 ^ max(strlen(tostring(valueStep):match("%.(%d+)") or ""),
 		strlen(tostring(minvalue):match("%.(%d+)") or ""),
@@ -207,18 +228,10 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 	end
 
 	slider:EnableMouseWheel(true)
-	slider:SetScript("OnEnter", scripts.OnEnter)
-	slider:SetScript("OnLeave", scripts.OnLeave)
-	slider:SetScript("OnMouseWheel", scripts.OnMouseWheel)
-	slider:SetScript("OnValueChanged", scripts.OnValueChanged)
-
-	frame.slider = slider
-	frame.labelText = label
-	frame.minText = minText
-	frame.maxText = high
-	frame.valueText = value
-
-	frame.isPercent = percent
+	slider:SetScript("OnEnter", Slider_OnEnter)
+	slider:SetScript("OnLeave", Slider_OnLeave)
+	slider:SetScript("OnMouseWheel", Slider_OnMouseWheel)
+	slider:SetScript("OnValueChanged", Slider_OnValueChanged)
 
 	for name, func in pairs(methods) do
 		frame[name] = func
@@ -226,6 +239,7 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 
 	label:SetText(name)
 	frame.tooltipText = tooltipText
+	frame.isPercent = percent
 
 	return frame
 end
