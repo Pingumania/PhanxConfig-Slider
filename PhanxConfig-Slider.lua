@@ -94,7 +94,7 @@ local function Slider_OnValueChanged(self)
 		value = value / self.valueFactor
 	end
 
-	if parent.Cabllack then
+	if parent.Callback then
 		value = parent:Callback(value) or value
 	end
 
