@@ -23,7 +23,8 @@ function methods:GetValue()
 end
 
 function methods:SetValue(value)
-	return self.slider:SetValue(value)
+	value = tonumber(value or nil)
+	return value and self.slider:SetValue(value)
 end
 
 function methods:GetLabel()
@@ -31,7 +32,7 @@ function methods:GetLabel()
 end
 
 function methods:SetLabel(text)
-	self.labelText:SetText(text)
+	self.labelText:SetText(tostring(text or ""))
 end
 
 function methods:GetTooltip()
@@ -39,7 +40,7 @@ function methods:GetTooltip()
 end
 
 function methods:SetTooltip(text)
-	self.tooltipText = text
+	self.tooltipText = text and tostring(text) or nil
 end
 
 ------------------------------------------------------------------------
