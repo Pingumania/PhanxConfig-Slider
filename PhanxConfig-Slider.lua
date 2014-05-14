@@ -23,16 +23,6 @@ function methods:GetValue()
 end
 
 function methods:SetValue(value)
-	if self.isPercent then
-		self.valueText:SetFormattedText("%.0f%%", value * 100)
-	else
-		self.valueText:SetText(value)
-	end
-
-	if self.slider.valueFactor then
-		value = value * self.slider.valueFactor
-	end
-
 	return self.slider:SetValue(value)
 end
 
@@ -70,32 +60,18 @@ local function Slider_OnLeave(self)
 	GameTooltip:Hide()
 end
 
-local function Slider_OnMouseWheel(self, delta)
-	local step = self:GetValueStep() * delta
-	local minValue, maxValue = self:GetMinMaxValues()
-	if step > 0 then
-		self:SetValue(min(self:GetValue() + step, maxValue))
-	else
-		self:SetValue(max(self:GetValue() + step, minValue))
-	end
-end
-
-local function Slider_OnValueChanged(self)
+local function Slider_OnValueChanged(self, value, userInput, delta)
 	local parent = self:GetParent()
-	local value = self:GetValue()
 	local minValue, maxValue = self:GetMinMaxValues()
+	local valueStep = self:GetValueStep()
 
-	local valueStep = self.valueStep
-	if valueStep and valueStep > 0 then
-		value = floor((value - minValue) / valueStep + 0.5) * valueStep + minValue
-	end
-
-	if self.valueFactor then
-		value = value / self.valueFactor
-	end
-
-	if parent.Callback then
-		value = parent:Callback(value) or value
+	if delta then
+		local step = valueStep * delta
+		if step > 0 then
+			value = min(self:GetValue() + step, maxValue)
+		else
+			value = max(self:GetValue() + step, minValue)
+		end
 	end
 
 	if parent.isPercent then
@@ -103,6 +79,14 @@ local function Slider_OnValueChanged(self)
 	else
 		parent.valueText:SetText(value)
 	end
+
+	if userInput and parent.Callback then
+		parent:Callback(value)
+	end
+end
+
+local function Slider_OnMouseWheel(self, delta)
+	return Slider_OnValueChanged(self, nil, true, delta)
 end
 
 ------------------------------------------------------------------------
@@ -194,40 +178,25 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 		maxText:SetText(maxValue)
 	end
 
-	local value
+	local valueText
 	if not noEditBox and LibStub("PhanxConfig-EditBox", true) then
-		value = LibStub("PhanxConfig-EditBox"):New(frame, nil, tooltipText, 5)
-		value:SetPoint("TOP", slider, "BOTTOM", 0, 13)
-		value:SetWidth(100)
-		value.editbox:SetFontObject(GameFontHighlightSmall)
-		value.editbox:SetJustifyH("CENTER")
-		value.editbox:SetScript("OnEnter", EditBox_OnEnter)
-		value.editbox:SetScript("OnLeave", EditBox_OnLeave)
-		value.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
-		value.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
+		valueText = LibStub("PhanxConfig-EditBox"):New(frame, nil, tooltipText, 5)
+		valueText:SetPoint("TOP", slider, "BOTTOM", 0, 13)
+		valueText:SetWidth(100)
+		valueText.editbox:SetFontObject(GameFontHighlightSmall)
+		valueText.editbox:SetJustifyH("CENTER")
+		valueText.editbox:SetScript("OnEnter", EditBox_OnEnter)
+		valueText.editbox:SetScript("OnLeave", EditBox_OnLeave)
+		valueText.editbox:SetScript("OnEnterPressed", EditBox_OnEnterPressed)
+		valueText.editbox:SetScript("OnTabPressed", EditBox_OnEnterPressed)
 	else
-		value = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
-		value:SetPoint("TOP", slider, "BOTTOM", 0, 3)
+		valueText = slider:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+		valueText:SetPoint("TOP", slider, "BOTTOM", 0, 3)
 	end
-	frame.valueText = value
-
-	local factor = 10 ^ max(strlen(tostring(valueStep):match("%.(%d+)") or ""),
-		strlen(tostring(minvalue):match("%.(%d+)") or ""),
-		strlen(tostring(maxvalue):match("%.(%d+)") or ""))
-	if factor > 1 then
-		slider.valueFactor = factor
-		slider:SetMinMaxValues(minValue * factor, maxValue * factor)
-		slider.minValue, slider.maxValue = minValue * factor, maxValue * factor
-		slider:SetValueStep(valueStep * factor)
-		slider.valueStep = valueStep * factor
-	else
-		slider:SetMinMaxValues(minValue, maxValue)
-		slider.minValue, slider.maxValue = minValue, maxValue
-		slider:SetValueStep(valueStep)
-		slider.valueStep = valueStep
-	end
+	frame.valueText = valueText
 
 	slider:EnableMouseWheel(true)
+	slider:SetObeyStepOnDrag(true)
 	slider:SetScript("OnEnter", Slider_OnEnter)
 	slider:SetScript("OnLeave", Slider_OnLeave)
 	slider:SetScript("OnMouseWheel", Slider_OnMouseWheel)
@@ -238,6 +207,8 @@ function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, perce
 	end
 
 	label:SetText(name)
+	slider:SetMinMaxValues(minValue, maxValue)
+	slider:SetValueStep(valueStep)
 	frame.tooltipText = tooltipText
 	frame.isPercent = percent
 
