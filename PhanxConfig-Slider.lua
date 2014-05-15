@@ -61,19 +61,26 @@ local function Slider_OnLeave(self)
 	GameTooltip:Hide()
 end
 
-local function Slider_OnValueChanged(self, value, userInput, delta)
+local function Slider_OnMouseWheel(self, delta)
 	local parent = self:GetParent()
 	local minValue, maxValue = self:GetMinMaxValues()
-	local valueStep = self:GetValueStep()
+	local step = self:GetValueStep() * delta
 
-	if delta then
-		local step = valueStep * delta
-		if step > 0 then
-			value = min(self:GetValue() + step, maxValue)
-		else
-			value = max(self:GetValue() + step, minValue)
-		end
+	if step > 0 then
+		value = min(self:GetValue() + step, maxValue)
+	else
+		value = max(self:GetValue() + step, minValue)
 	end
+
+	self:SetValue(value)
+
+	if parent.Callback then
+		parent:Callback(value)
+	end
+end
+
+local function Slider_OnValueChanged(self, value, userInput)
+	local parent = self:GetParent()
 
 	if parent.isPercent then
 		parent.valueText:SetFormattedText("%.0f%%", value * 100)
@@ -84,10 +91,6 @@ local function Slider_OnValueChanged(self, value, userInput, delta)
 	if userInput and parent.Callback then
 		parent:Callback(value)
 	end
-end
-
-local function Slider_OnMouseWheel(self, delta)
-	return Slider_OnValueChanged(self, nil, true, delta)
 end
 
 ------------------------------------------------------------------------
@@ -102,7 +105,7 @@ local function EditBox_OnLeave(self)
 	return Slider_OnLeave(parent.slider)
 end
 
-local function EditBox_OnEnterPressed(self) -- print("OnEnterPressed SLIDER")
+local function EditBox_OnEnterPressed(self)
 	local parent = self:GetParent():GetParent()
 	local text = self:GetText()
 	self:ClearFocus()
@@ -128,7 +131,7 @@ local sliderBG = {
 }
 
 function lib:New(parent, name, tooltipText, minValue, maxValue, valueStep, percent, noEditBox)
-	assert(type(parent) == "table" and parent.CreateFontString, "PhanxConfig-Slider: Parent is not a valid frame!")
+	assert(type(parent) == "table" and type(rawget(parent, 0)) == "userdata", "PhanxConfig-Slider: parent must be a frame")
 	if type(name) ~= "string" then name = nil end
 	if type(tooltipText) ~= "string" then tooltipText = nil end
 	if type(minValue) ~= "number" then minValue = 0 end
