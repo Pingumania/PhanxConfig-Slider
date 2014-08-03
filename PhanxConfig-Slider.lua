@@ -4,9 +4,18 @@
 	Based on tekKonfig-Slider and AceGUI-3.0-Slider.
 	Requires LibStub.
 
-	This library is not intended for use by other authors. Absolutely no
-	support of any kind will be provided for other authors using it, and
-	its internals may change at any time without notice.
+	Written by Phanx <addons@phanx.net>
+	https://github.com/phanx/PhanxConfigWidgets
+
+	This is free and unencumbered software released into the public domain.
+
+	However, if you make any modifications, you are strongly encouraged
+	to give your version a different name, so that you do not break
+	addons using the original version, or vice versa.
+
+	And finally, I wrote this library for my own use in my own addons.
+	No support of any kind will be provided for use by anyone else,
+	and its internals may change at any time without any warning.
 ----------------------------------------------------------------------]]
 
 local MINOR_VERSION = tonumber(strmatch("$Revision$", "%d+"))
@@ -50,10 +59,7 @@ local function Slider_OnEnter(self)
 	local text = container.tooltipText
 	if text then
 		GameTooltip:SetOwner(container, "ANCHOR_RIGHT")
-		GameTooltip:AddLine(container.labelText:GetText(), nil, nil, nil, true)
-		GameTooltip:AddLine(container.tooltipText, 1, 1, 1, true)
-		GameTooltip:SetMinimumWidth(GameTooltipTextLeft1:GetStringWidth() + 21)
-		GameTooltip:Show()
+		GameTooltip:SetText(container.tooltipText, nil, nil, nil, nil, true)
 	end
 end
 
