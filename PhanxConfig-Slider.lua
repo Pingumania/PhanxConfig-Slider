@@ -87,6 +87,7 @@ end
 
 local function Slider_OnValueChanged(self, value, userInput)
 	local parent = self:GetParent()
+	if parent.lastValue == value then return end
 
 	if parent.isPercent then
 		parent.valueText:SetFormattedText("%.0f%%", value * 100)
@@ -94,9 +95,11 @@ local function Slider_OnValueChanged(self, value, userInput)
 		parent.valueText:SetText(value)
 	end
 
-	if userInput and parent.Callback then
+	if parent.lastValue and parent.Callback then print("slider", parent:GetLabel(), "Callback", value)
 		parent:Callback(value)
 	end
+
+	parent.lastValue = value
 end
 
 ------------------------------------------------------------------------
