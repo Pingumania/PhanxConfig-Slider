@@ -85,7 +85,7 @@ local function Slider_OnValueChanged(self, value, userInput)
 		parent.valueText:SetText(value)
 	end
 
-	if parent.lastValue and parent.Callback then print("slider", parent:GetLabel(), "Callback", value)
+	if parent.lastValue and parent.Callback then
 		parent:Callback(value)
 	end
 
