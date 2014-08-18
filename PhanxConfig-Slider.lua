@@ -70,8 +70,9 @@ local function Slider_OnMouseWheel(self, delta)
 
 	self:SetValue(value)
 
-	if parent.Callback then
-		parent:Callback(value)
+	local callback = parent.OnValueChanged or parent.Callback
+	if callback then
+		callback(parent, value)
 	end
 end
 
