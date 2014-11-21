@@ -3,12 +3,11 @@
 	Simple slider widget generator.
 	Based on tekKonfig-Slider and AceGUI-3.0-Slider.
 	Requires LibStub.
-	https://github.com/phanx/PhanxConfigWidgets
 	Copyright (c) 2009-2014 Phanx. All rights reserved.
-	See the accompanying README and LICENSE files for more information.
+	https://github.com/phanx/PhanxConfigWidgets
 ----------------------------------------------------------------------]]
 
-local MINOR_VERSION = tonumber(strmatch("$Revision$", "%d+"))
+local MINOR_VERSION = 176
 
 local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", MINOR_VERSION)
 if not lib then return end
