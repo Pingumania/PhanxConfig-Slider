@@ -2,6 +2,7 @@
 	PhanxConfig-Slider
 	Simple slider widget generator. Requires LibStub.
 	Based on tekKonfig-Slider and AceGUI-3.0-Slider.
+	https://github.com/Phanx/PhanxConfig-Slider
 
 	Copyright (c) 2009-2014 Phanx <addons@phanx.net>. All rights reserved.
 
@@ -116,8 +117,9 @@ local function Slider_OnValueChanged(self, value, userInput)
 		parent.valueText:SetText(value)
 	end
 
-	if parent.lastValue and parent.Callback then
-		parent:Callback(value)
+	local callback = parent.OnValueChanged or parent.Callback
+	if callback and parent.lastValue then
+		callback(parent, value)
 	end
 
 	parent.lastValue = value
