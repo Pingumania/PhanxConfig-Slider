@@ -39,7 +39,7 @@
 	OTHER DEALINGS IN THE SOFTWARE.
 ----------------------------------------------------------------------]]
 
-local MINOR_VERSION = 176
+local MINOR_VERSION = 20141201
 
 local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", MINOR_VERSION)
 if not lib then return end
@@ -101,7 +101,7 @@ local function Slider_OnMouseWheel(self, delta)
 
 	self:SetValue(value)
 
-	local callback = parent.OnValueChanged or parent.Callback
+	local callback = parent.OnValueChanged
 	if callback then
 		callback(parent, value)
 	end
@@ -117,7 +117,7 @@ local function Slider_OnValueChanged(self, value, userInput)
 		parent.valueText:SetText(value)
 	end
 
-	local callback = parent.OnValueChanged or parent.Callback
+	local callback = parent.OnValueChanged
 	if callback and parent.lastValue then
 		callback(parent, value)
 	end
