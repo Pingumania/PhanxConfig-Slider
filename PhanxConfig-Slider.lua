@@ -125,7 +125,7 @@ function lib:New(container, name, tooltipText, minValue, maxValue, valueStep, pe
 
 	local frame = CreateFrame("Frame", nil, container)
 	frame:SetWidth(180)
-	frame:SetHeight(42)
+	frame:SetHeight(50)
 --[[
 	frame.bg = frame:CreateTexture(nil, "BACKGROUND")
 	frame.bg:SetAllPoints(true)
