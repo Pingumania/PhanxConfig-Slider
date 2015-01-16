@@ -89,6 +89,11 @@ function editBoxScripts:OnLeave()
 	return scripts.OnLeave(slider)
 end
 
+function editBoxScripts:OnMouseWheel(delta)
+	local slider = self:GetParent()
+	return scripts.OnMouseWheel(slider, delta)
+end
+
 function editBoxScripts:OnEnterPressed()
 	local slider = self:GetParent()
 	local container = slider:GetParent()
@@ -162,10 +167,12 @@ function lib:New(container, name, tooltipText, minValue, maxValue, valueStep, pe
 
 	if not noEditBox and LibStub("PhanxConfig-EditBox", true) then
 		local valueText = LibStub("PhanxConfig-EditBox"):New(slider, nil, tooltipText, 5)
+		valueText:SetFrameLevel(slider:GetFrameLevel() - 1) -- don't let editbox top texture overlap slider
 		valueText:SetPoint("TOP", slider, "BOTTOM", 0, 6)
 		valueText:SetWidth(70)
 		valueText:SetFontObject(GameFontHighlightSmall)
 		valueText:SetJustifyH("CENTER")
+		valueText:EnableMouseWheel(true)
 		for name, func in pairs(editBoxScripts) do
 			valueText:SetScript(name, func)
 		end
