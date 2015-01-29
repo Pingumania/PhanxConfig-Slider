@@ -136,8 +136,8 @@ function lib:New(container, name, tooltipText, minValue, maxValue, valueStep, pe
 	frame.bg:SetTexture(0, 0.5, 0, 0.5)
 ]]
 	local slider = CreateFrame("Slider", nil, frame)
-	slider:SetPoint("BOTTOMLEFT", 0, 14)
-	slider:SetPoint("BOTTOMRIGHT", 0, 14)
+	slider:SetPoint("BOTTOMLEFT", 2, 14)
+	slider:SetPoint("BOTTOMRIGHT", -2, 14)
 	slider:SetHeight(17)
 	slider:SetOrientation("HORIZONTAL")
 	slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
