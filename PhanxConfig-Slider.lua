@@ -10,7 +10,7 @@
 	credits line -- any modified versions must be renamed to avoid conflicts.
 ----------------------------------------------------------------------]]
 
-local MINOR_VERSION = 20150112
+local MINOR_VERSION = 20150129
 
 local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", MINOR_VERSION)
 if not lib then return end
@@ -129,16 +129,15 @@ function lib:New(container, name, tooltipText, minValue, maxValue, valueStep, pe
 	if type(valueStep) ~= "number" then valueStep = 1 end
 
 	local frame = CreateFrame("Frame", nil, container)
-	frame:SetWidth(180)
-	frame:SetHeight(50)
+	frame:SetSize(200, 48)
 --[[
 	frame.bg = frame:CreateTexture(nil, "BACKGROUND")
 	frame.bg:SetAllPoints(true)
-	frame.bg:SetTexture(0, 1, 0, 0.25)
+	frame.bg:SetTexture(0, 0.5, 0, 0.5)
 ]]
 	local slider = CreateFrame("Slider", nil, frame)
-	slider:SetPoint("BOTTOMLEFT", 0, 10)
-	slider:SetPoint("BOTTOMRIGHT", 0, 10)
+	slider:SetPoint("BOTTOMLEFT", 0, 14)
+	slider:SetPoint("BOTTOMRIGHT", 0, 14)
 	slider:SetHeight(17)
 	slider:SetOrientation("HORIZONTAL")
 	slider:SetThumbTexture("Interface\\Buttons\\UI-SliderBar-Button-Horizontal")
