@@ -10,7 +10,7 @@
 	credits line -- any modified versions must be renamed to avoid conflicts.
 ----------------------------------------------------------------------]]
 
-local MINOR_VERSION = 20150129
+local MINOR_VERSION = 20151003
 
 local lib, oldminor = LibStub:NewLibrary("PhanxConfig-Slider", MINOR_VERSION)
 if not lib then return end
@@ -26,6 +26,38 @@ end
 function methods:SetValue(value)
 	value = tonumber(value or nil)
 	return value and self.slider:SetValue(value)
+end
+
+function methods:Disable()
+	self.slider:EnableMouse(false)
+	self.slider:EnableMouseWheel(false)
+	self.labelText:SetFontObject("GameFontDisable")
+	self.minText:SetFontObject("GameFontDisableSmall")
+	self.maxText:SetFontObject("GameFontDisableSmall")
+	self.valueText:SetFontObject("GameFontDisableSmall")
+	self.enabled = false
+end
+
+function methods:Enable()
+	self.slider:EnableMouse(true)
+	self.slider:EnableMouseWheel(true)
+	self.labelText:SetFontObject("GameFontNormal")
+	self.minText:SetFontObject("GameFontNormalSmall")
+	self.maxText:SetFontObject("GameFontNormalSmall")
+	self.valueText:SetFontObject("GameFontHighlightSmall")
+	self.enabled = false
+end
+
+function methods:SetEnabled(enabled)
+	if enabled then
+		self:Enable()
+	else
+		self:Disable()
+	end
+end
+
+function methods:GetEnabled()
+	return self.enabled ~= false -- nil if it's never been explicitly disabled or enabled
 end
 
 ------------------------------------------------------------------------
