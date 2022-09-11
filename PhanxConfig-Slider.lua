@@ -167,7 +167,7 @@ function lib:New(container, name, tooltipText, minValue, maxValue, valueStep, pe
 	frame.bg:SetAllPoints(true)
 	frame.bg:SetTexture(0, 0.5, 0, 0.5)
 ]]
-	local slider = CreateFrame("Slider", nil, frame)
+	local slider = CreateFrame("Slider", nil, frame, BackdropTemplateMixin and "BackdropTemplate")
 	slider:SetPoint("BOTTOMLEFT", 2, 14)
 	slider:SetPoint("BOTTOMRIGHT", -2, 14)
 	slider:SetHeight(17)
